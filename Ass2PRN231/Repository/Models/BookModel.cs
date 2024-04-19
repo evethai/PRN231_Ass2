@@ -26,7 +26,8 @@ namespace Repository.Models
         public string? Notes { get; set; }
         [JsonPropertyName("date")]
         public DateTime? Date { get; set; }
-    
+        [JsonPropertyName("is-active")]
+        public bool? IsActive { get; set; }
     }
 
     public class BookModelResponse
