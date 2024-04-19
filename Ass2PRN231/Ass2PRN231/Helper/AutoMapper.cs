@@ -10,6 +10,9 @@ namespace Ass2PRN231.Helper
         public AutoMapper()
         {
             CreateMap<Book, BookModel>().ReverseMap();
+            CreateMap<Author, AuthorModel>().ReverseMap();
+            CreateMap<BookAuthor, BookAuthorModel>().ReverseMap();
+            CreateMap<Author,AddNewAuthorModel>().ReverseMap();
         }
 
     }
