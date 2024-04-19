@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Ass2_WebRazor</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Ass2_WebRazor.styles.css" asp-append-version="true" />
+    <link href="~/css/stylesheet.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container" style="margin-right:0px; margin-left:0px">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Book Stores</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="sidebar-btn" style="color: #cdd8e0">Users</a></li>
+                <li><a href="#" class="sidebar-btn" style="color: #cdd8e0">Books</a></li>
+                <li><a href="#" class="sidebar-btn" style="color: #cdd8e0">Publishers</a></li>
+                <li><a href="#" class="sidebar-btn" style="color: #cdd8e0">Authors</a></li>
+
+            </ul>
+        </div>
+        <div class="content">
+            @RenderBody()
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

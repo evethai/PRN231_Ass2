@@ -1,0 +1,92 @@
+﻿@page
+@model Ass2_WebRazor.Pages.RegisterModel
+@{
+    Layout = null;
+}
+<style>
+    .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    .image-container {
+        text-align: center;
+    }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+        }
+
+    .login-container {
+        flex: 1;
+        max-width: 400px;
+        padding: 20px;
+        border-radius: 5px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: blue;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    button {
+        width: 50%;
+        padding: 10px;
+        background-color: #007bff;
+        border: none;
+        color: #fff;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+</style>
+<div class="container">
+    <div class="image-container">
+        <img src="~/image/stack-books.png" alt="Image" />
+    </div>
+    <div class="login-container">
+        <h1>Book Stores Register</h1>
+        <form method="post">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="password-cf">Confirm password::</label>
+                <input type="password" id="password-cf" name="password-cf" required>
+            </div>
+            <button type="submit">Sign up</button>
+            <a href="/Login" style="margin-left: 10px">Already an user?</a>
+        </form>
+    </div>
+</div>
+
+

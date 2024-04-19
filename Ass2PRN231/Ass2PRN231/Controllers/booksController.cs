@@ -35,7 +35,8 @@ namespace Ass2PRN231.Controllers
 
         // GET: api/books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookModel>>> GetBooks([FromQuery] BookSearchModel search)
+        //public async Task<ActionResult<IEnumerable<BookModel>>> GetBooks([FromQuery] BookSearchModel search)
+        public async Task<ActionResult<BookModelResponse>> GetBooks([FromQuery] BookSearchModel search)
         {
             if (search.pageSize != null)
             {
@@ -112,8 +113,13 @@ namespace Ass2PRN231.Controllers
             }
 
             string includeProperties = "Pub";
-            var list = _unitOfWork.BookRepository.Get(filter,orderBy,includeProperties,currentPage,pageSize).ToList();
-            var result = _mapper.Map<IEnumerable<BookModel>>(list);
+            var books = _unitOfWork.BookRepository.Get(filter,orderBy,includeProperties,currentPage,pageSize).ToList();
+            var list = _mapper.Map<IEnumerable<BookModel>>(books);
+            var total = _unitOfWork.BookRepository.Get(p => p.IsActive == true).Count();
+            BookModelResponse result = new BookModelResponse();
+            result.total = total;
+            result.currentPage = currentPage.Value;
+            result.books = list.ToList();
 
             return Ok(result);
         }
@@ -122,89 +128,99 @@ namespace Ass2PRN231.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Book>> GetBook(int id)
         {
-          if (_context.Books == null)
-          {
-              return NotFound();
-          }
-            var book = await _context.Books.FindAsync(id);
 
-            if (book == null)
+            var book = _unitOfWork.BookRepository.GetByID(id);
+            if (book == null || book.IsActive == false)
             {
                 return NotFound();
             }
-
-            return book;
+            var result = _mapper.Map<BookModel>(book);
+            return Ok(result);
         }
 
         // PUT: api/books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, Book book)
+        public async Task<IActionResult> PutBook(int id, [FromForm] BookUpdateModel newBook)
         {
-            if (id != book.Id)
+            if(ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+            var oldBook = _unitOfWork.BookRepository.GetByID(id);
+            if(oldBook == null)
+            {
+                return NotFound();
+            }
+            oldBook.Title = newBook.Title;
+            oldBook.Price = newBook.Price;
+            oldBook.Type = newBook.Type;
+            oldBook.PubId = newBook.PubId;
+            oldBook.Advance = newBook.Advance;
+            oldBook.Royalty = newBook.Royalty;
+            oldBook.YtdSales = newBook.YtdSales;
+            oldBook.Notes = newBook.Notes;
+
+            try
+            {
+                _unitOfWork.BookRepository.Update(oldBook);
+                _unitOfWork.Save();
+                return Ok(newBook);
+                //return Ok("Update successful.");
+            }
+            catch (DbUpdateConcurrencyException)
             {
                 return BadRequest();
             }
 
-            _context.Entry(book).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
         }
 
         // POST: api/books
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Book>> PostBook(Book book)
+        public async Task<ActionResult<Book>> PostBook([FromForm]BookUpdateModel book)
         {
-          if (_context.Books == null)
-          {
-              return Problem("Entity set 'Ass2Prn231Context.Books'  is null.");
-          }
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
+          if(ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+            var newBook = _mapper.Map<Book>(book);
+            newBook.IsActive = true;
+            newBook.Date = DateTime.Now;
+            _unitOfWork.BookRepository.Insert(newBook);
+            _unitOfWork.Save();
+            return CreatedAtAction("Create successful.", new { id = newBook.Id }, book);
 
-            return CreatedAtAction("GetBook", new { id = book.Id }, book);
         }
 
         // DELETE: api/books/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            if (_context.Books == null)
+            //if (_context.Books == null)
+            //{
+            //    return NotFound();
+            //}
+            //var book = await _context.Books.FindAsync(id);
+            //if (book == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //_context.Books.Remove(book);
+            //await _context.SaveChangesAsync();
+
+            //return NoContent();
+
+            var book = _unitOfWork.BookRepository.GetByID(id);
+            if(book == null)
             {
-                return NotFound();
+                return NotFound("Id is not existed!");
             }
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool BookExists(int id)
-        {
-            return (_context.Books?.Any(e => e.Id == id)).GetValueOrDefault();
+            book.IsActive = false;
+            _unitOfWork.BookRepository.Update(book);
+            _unitOfWork.Save();
+            return Ok("Delete successful.");
         }
     }
 }

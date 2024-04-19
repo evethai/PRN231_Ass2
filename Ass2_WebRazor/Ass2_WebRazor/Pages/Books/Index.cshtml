@@ -1,0 +1,164 @@
+﻿@page
+@model Ass2_WebRazor.Pages.Books.IndexModel
+@{
+    ViewData["Title"] = "Books";
+}
+<style>
+    /* CSS cho tiêu đề "Books" */
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* CSS cho ô input tìm kiếm */
+    .search-container {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    #searchInput {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 5px;
+    }
+
+    #searchButton {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        #searchButton:hover {
+            background-color: #0056b3;
+        }
+
+    /* CSS cho bảng sách */
+    #booksTable {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        #booksTable th, #booksTable td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        #booksTable th {
+            background-color: #f0f0f0;
+        }
+
+    /* CSS cho nút "Add New" */
+    #addButton {
+        display: block;
+        margin: 0 auto;
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        #addButton:hover {
+            background-color: #218838;
+        }
+
+</style>
+
+<h1>Books</h1>
+
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search by name..." />
+    <input type="number" id="minPriceInput" placeholder="Min price..." />
+    <input type="number" id="maxPriceInput" placeholder="Max price..." />
+    <button type="button" id="searchButton">Search</button>
+</div>
+
+<table id="booksTable">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Publisher ID</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Book list will be populated here -->
+    </tbody>
+</table>
+
+<div id="pagination"></div>
+
+<button type="button" id="addButton">Add New</button>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    var currentPage = 1;
+    var pageSize = 3;
+    var totalPages = 1;
+
+    $(document).ready(function () {
+        ShowBooks(currentPage);
+    });
+
+    function ShowBooks(page) {
+        $("#booksTable tbody").html("");
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:7027/api/books?current-page="+page+"&page-size="+pageSize,
+            contentType: "application/json",
+            success: function (result, status, xhr) {
+                $.each(result.books, function (key, item) {
+                    var row = $("<tr>");
+                    row.append($("<td>").html(item.id));
+                    row.append($("<td>").html(item.title));
+                    row.append($("<td>").html(item.type));
+                    row.append($("<td>").html(item["publisher-id"]));
+                    row.append($("<td>").html(item.price));
+                    row.append($("<td>").html("<button type='button' onclick='EditBook(" + item.id + ")'>Edit</button> <button type='button' onclick='DeleteBook(" + item.id + ")'>Delete</button>"));
+                    $("#booksTable tbody").append(row);
+                });
+
+                // Update pagination
+                currentPage = result.currentPage;
+                totalPages = Math.ceil(result.total/pageSize); 
+                UpdatePagination();
+            },
+            error: function (xhr, status, error) {
+                alert("Error: " + status + " - " + error);
+            }
+        });
+    }
+
+    function UpdatePagination() {
+        var paginationHtml = "Page: ";
+        for (var i = 1; i <= totalPages; i++) {
+            if (i === currentPage) {
+                paginationHtml += "<span>" + i + "</span> ";
+            } else {
+                paginationHtml += "<a href='#' onclick='ChangePage(" + i + ")'>" + i + "</a> ";
+            }
+        }
+        $("#pagination").html(paginationHtml);
+    }
+
+    function ChangePage(page) {
+        ShowBooks(page);
+    }
+
+    function EditBook(id) {
+        // Your edit book function
+    }
+
+    function DeleteBook(id) {
+        // Your delete book function
+    }
+</script>
