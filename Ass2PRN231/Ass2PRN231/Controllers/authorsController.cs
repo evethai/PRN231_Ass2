@@ -22,9 +22,6 @@ namespace Ass2PRN231.Controllers
         private readonly UnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        private int? pageSize = 10;
-        private int? currentPage = 1;
-
         public authorsController(Ass2Prn231Context context, UnitOfWork unitOfWork, IMapper mapper)
         {
             _context = context;
