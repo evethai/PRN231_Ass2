@@ -6,4 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\Publishers\" />
+    <Folder Include="Pages\Users\" />
+  </ItemGroup>
+
 </Project>
