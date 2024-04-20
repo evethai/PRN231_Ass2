@@ -1,0 +1,101 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f3f3;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.books-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.book {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.book-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.book-details {
+    margin-top: 10px;
+}
+
+    .book-details p {
+        margin: 5px 0;
+        color: #666;
+    }
+
+        .book-details p span {
+            font-weight: bold;
+            color: #333;
+        }
+
+.book-image {
+    width: 100%; /* Đảm bảo hình ảnh lấp đầy phần tử cha */
+    height: auto; /* Đảm bảo tỷ lệ khung hình tự động */
+    border-radius: 8px; /* Bo góc hình ảnh */
+    margin-bottom: 10px; /* Khoảng cách dưới của hình ảnh */
+}
+.navbar {
+    background-color: #333;
+    margin-bottom: 20px;
+}
+
+.menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: flex-end; /* Căn phần tử con về phía bên phải của flex container */
+}
+
+    .menu li {
+        padding: 10px 20px;
+    }
+
+        .menu li a {
+            text-decoration: none;
+            color: #fff;
+        }
+
+            .menu li a:hover {
+                background-color: #555;
+            }
+
+#loginStatus {
+    margin-left: auto; 
+    color: white;
+}
+
+    #loginStatus a {
+        background-color: #4CAF50;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+
+        #loginStatus a:hover {
+            background-color: #45a049;
+        }

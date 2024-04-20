@@ -1,0 +1,79 @@
+﻿@page
+@model Ass2_WebRazor.Pages.ShopModel
+@{
+    ViewData["Title"] = "Shop";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Store</title>
+    <link href="~/css/cssshop.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <h1>E-Store</h1>
+        <nav class="navbar">
+            <ul class="menu">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Books</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+                <li id="loginStatus"></li>
+            </ul>
+        </nav>
+        <div class="books-container" id="booksContainer">
+            <!-- Books will be dynamically populated here -->
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                type: "GET",
+                url: "https://localhost:7027/api/books",
+                contentType: "application/json",
+                success: function (result, status, xhr) {
+                    $.each(result.books, function (key, item) {
+                        var book = $("<div class='book'>");
+                        book.append($("<h2>").html(item.title));
+                        book.append($("<p>").html("Type: " + item.type));
+                        var image = $("<img>").attr("src", "/image/download.jpg").addClass("book-image");
+                        book.append(image);
+                        book.append($("<p>").html("Publisher ID: " + item["publisher-id"]));
+                        book.append($("<p>").html("Price: " + item.price));
+                        book.append($("<button>").html("Add to Cart"));
+                        book.append($("<button>").html("View Detail"));
+                        $("#booksContainer").append(book);
+                    });
+                }
+            });
+        });
+
+        var isLoggedIn = false;
+
+        $(document).ready(function () {
+            updateLoginStatus();
+            $('#loginStatus').on('click', function () {
+                if (isLoggedIn) {
+                    isLoggedIn = false;
+                    updateLoginStatus();
+                } else {
+                    window.location.href = '/Login';
+                }
+            });
+        });
+
+        function updateLoginStatus() {
+            var loginStatus = $('#loginStatus');
+            if (isLoggedIn) {
+                loginStatus.html('<a href="#">Logout</a> | Welcome User');
+            } else {
+                loginStatus.html('<a href="#">Login</a>');
+            }
+        }
+    </script>
+</body>
+</html>

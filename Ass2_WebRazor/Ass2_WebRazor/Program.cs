@@ -9,7 +9,7 @@ builder.Services.AddRazorPages(options =>
     //...
 }).AddRazorPagesOptions(options =>
 {
-    options.Conventions.AddPageRoute("/Login", "");
+    options.Conventions.AddPageRoute("/Shop", "");
 });
 var app = builder.Build();
 

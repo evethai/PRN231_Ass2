@@ -115,7 +115,7 @@ namespace Ass2PRN231.Controllers
             string includeProperties = "Pub";
             var books = _unitOfWork.BookRepository.Get(filter,orderBy,includeProperties,currentPage,pageSize).ToList();
             var list = _mapper.Map<IEnumerable<BookModel>>(books);
-            var total = _unitOfWork.BookRepository.Get(p => p.IsActive == true).Count();
+            var total = _unitOfWork.BookRepository.Get(filter).Count();
             BookModelResponse result = new BookModelResponse();
             result.total = total;
             result.currentPage = currentPage.Value;
@@ -126,7 +126,7 @@ namespace Ass2PRN231.Controllers
 
         // GET: api/books/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
+        public async Task<ActionResult<BookModel>> GetBook(int id)
         {
 
             var book = _unitOfWork.BookRepository.GetByID(id);
@@ -178,7 +178,7 @@ namespace Ass2PRN231.Controllers
         // POST: api/books
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Book>> PostBook([FromForm]BookUpdateModel book)
+        public async Task<ActionResult<BookUpdateModel>> PostBook([FromForm] BookUpdateModel book)
         {
           if(ModelState.IsValid == false)
             {
@@ -187,9 +187,16 @@ namespace Ass2PRN231.Controllers
             var newBook = _mapper.Map<Book>(book);
             newBook.IsActive = true;
             newBook.Date = DateTime.Now;
-            _unitOfWork.BookRepository.Insert(newBook);
-            _unitOfWork.Save();
-            return CreatedAtAction("Create successful.", new { id = newBook.Id }, book);
+            try
+            {
+                _unitOfWork.BookRepository.Insert(newBook);
+                _unitOfWork.Save();
+                return Ok(book);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return BadRequest();
+            }
 
         }
 
@@ -197,20 +204,6 @@ namespace Ass2PRN231.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            //if (_context.Books == null)
-            //{
-            //    return NotFound();
-            //}
-            //var book = await _context.Books.FindAsync(id);
-            //if (book == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //_context.Books.Remove(book);
-            //await _context.SaveChangesAsync();
-
-            //return NoContent();
 
             var book = _unitOfWork.BookRepository.GetByID(id);
             if(book == null)

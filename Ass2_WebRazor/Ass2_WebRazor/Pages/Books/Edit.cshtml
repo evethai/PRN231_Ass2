@@ -1,0 +1,256 @@
+﻿@page
+@model Ass2_WebRazor.Pages.Books.EditModel
+@{
+}
+<style>
+    .containerCreate {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    select {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-top: 5px;
+    }
+
+        select option {
+            padding: 8px;
+        }
+
+
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px #007bff;
+        }
+
+    input[type="submit"] {
+        width: auto;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+    .error-message {
+        color: red;
+        font-size: 14px;
+    }
+</style>
+
+<div class="containerCreate">
+    <h1>Create Book</h1>
+    <div>
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title">
+        <div class="error-message" id="titleError"></div>
+    </div>
+    <div>
+        <label for="type">Type:</label>
+        <input type="text" id="type" name="type">
+        <div class="error-message" id="typeError"></div>
+    </div>
+    <div>
+        <label for="pubId">Publisher:</label>
+        <select id="pubId" name="pubId">
+            <option value="">Select Publisher</option>
+        </select>
+        <div class="error-message" id="pubIdError"></div>
+    </div>
+    <div>
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price">
+        <div class="error-message" id="priceError"></div>
+    </div>
+    <div>
+        <label for="advance">Advance:</label>
+        <input type="number" id="advance" name="advance">
+        <div class="error-message" id="advanceError"></div>
+    </div>
+    <div>
+        <label for="royalty">Royalty:</label>
+        <input type="number" id="royalty" name="royalty">
+        <div class="error-message" id="royaltyError"></div>
+    </div>
+    <div>
+        <label for="ytdSales">YTD Sales:</label>
+        <input type="number" id="ytdSales" name="ytdSales">
+        <div class="error-message" id="ytdSalesError"></div>
+    </div>
+    <div>
+        <label for="notes">Notes:</label>
+        <textarea id="notes" name="notes"></textarea>
+        <div class="error-message" id="notesError"></div>
+    </div>
+    <div>
+        <input type="submit" id="saveButton" value="Save">
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        getAllPublisher();
+    });
+    
+    function GetBookByID() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var id = urlParams.get("id");
+
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:7027/api/books/" + id,
+            contentType: "application/json",
+            success: function (result, status, xhr) {
+                $("#title").val(result["title"]);
+                $("#type").val(result["type"]);
+                $("#pubId").val(result["publisher-id"]);
+                $("#price").val(result["price"]);
+                $("#advance").val(result["advance"]);
+                $("#royalty").val(result["royalty"]);
+                $("#ytdSales").val(result["ytd-sales"]);
+                $("#notes").val(result["notes"]);
+            }
+        });
+    }
+
+
+    function getAllPublisher() {
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:7027/api/publishers",
+            contentType: "application/json",
+            success: function (result, status, xhr) {
+                $.each(result, function (index, value) {
+                    $("#pubId").append($("<option>").html(value["name"]).val(value["id"]));
+                });
+                GetBookByID();
+            }
+        });
+    }
+
+    function validateForm() {
+        // Reset error messages
+        document.querySelectorAll('.error-message').forEach(function (element) {
+            element.innerText = '';
+        });
+
+        // Get form inputs
+        var title = document.getElementById('title').value.trim();
+        var type = document.getElementById('type').value.trim();
+        var pubId = document.getElementById('pubId').value.trim();
+        var price = document.getElementById('price').value.trim();
+        var advance = document.getElementById('advance').value.trim();
+        var royalty = document.getElementById('royalty').value.trim();
+        var ytdSales = document.getElementById('ytdSales').value.trim();
+        var notes = document.getElementById('notes').value.trim();
+
+        // Flag to track if form is valid
+        var isValid = true;
+
+        // Validation logic
+        if (title === '') {
+            document.getElementById('titleError').innerText = 'Title is required.';
+            isValid = false;
+        }
+        if (type === '') {
+            document.getElementById('typeError').innerText = 'Type is required.';
+            isValid = false;
+        }
+        if (pubId === '') {
+            document.getElementById('pubIdError').innerText = 'Publisher Id is required.';
+            isValid = false;
+        }
+        if (price === '') {
+            document.getElementById('priceError').innerText = 'Price is required.';
+            isValid = false;
+        } else if (isNaN(price) || parseFloat(price) <= 0) {
+            document.getElementById('priceError').innerText = 'Price must be a valid number greater than 0.';
+            isValid = false;
+        }
+        if (advance === '') {
+            document.getElementById('advanceError').innerText = 'Advance is required.';
+            isValid = false;
+        }
+        if (royalty === '') {
+            document.getElementById('royaltyError').innerText = 'Royalty is required.';
+            isValid = false;
+        }
+        if (ytdSales === '') {
+            document.getElementById('ytdSalesError').innerText = 'YTD Sales is required.';
+            isValid = false;
+        }
+        if (notes.length > 200) {
+            document.getElementById('notesError').innerText = 'Notes must be less than 200 characters.';
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    $(document).on("click", "#saveButton", function () {
+        var urlParams = new URLSearchParams(window.location.search);
+        var id = urlParams.get("id");
+
+        if (validateForm()) {
+
+            data = new FormData();
+            data.append("title", $("#title").val());
+            data.append("type", $("#type").val());
+            data.append("pub-id", $("#pubId").val());
+            data.append("price", $("#price").val());
+            data.append("advance", $("#advance").val());
+            data.append("royalty", $("#royalty").val());
+            data.append("ytd-sales", $("#ytdSales").val());
+            data.append("notes", $("#notes").val());
+
+
+            $.ajax({
+                type: "PUT",
+                url: "https://localhost:7027/api/books/"+ id,
+                data: data,
+                contentType: false,
+                processData: false,
+                success: function (result, status, xhr) {
+                    alert('Book update successfully.');
+                    window.location.href = '/Books/Index';
+                },
+                error: function (xhr, status, error) {
+                    alert('Failed to create book. Please try again.');
+                }
+            });
+        } else {
+
+            console.log('Form is invalid. Please correct the errors.');
+        }
+    });
+
+</script>

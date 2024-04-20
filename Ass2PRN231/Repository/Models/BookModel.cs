@@ -65,6 +65,4 @@ namespace Repository.Models
         [FromForm(Name = "notes")]
         public string? Notes { get; set; }
     }
-
-
 }
