@@ -11,13 +11,10 @@ namespace Ass2PRN231.Helper
         {
             CreateMap<Book, BookModel>().ReverseMap();
             CreateMap<Book, BookUpdateModel>().ReverseMap();
-            CreateMap<Publisher, PublisherModel>().ReverseMap();
             CreateMap<User, UserModel>().ReverseMap();
-            CreateMap<UserUpdateDTO, User>().ReverseMap();
-            CreateMap<UserCreateDTO, User>().ReverseMap();
+            CreateMap<User, UserUpdateModel>().ReverseMap();            
             CreateMap<Publisher, PublisherModel>().ReverseMap();
-            CreateMap<PublisherUpdateDTO, Publisher>().ReverseMap();
-            CreateMap<PublisherCreateDTO, Publisher>().ReverseMap();
+            CreateMap<Publisher, PublisherUpdateModel>().ReverseMap();          
             CreateMap<Author, AuthorModel>().ReverseMap();
             CreateMap<BookAuthor, BookAuthorModel>().ReverseMap();
             CreateMap<Author,AddNewAuthorModel>().ReverseMap();

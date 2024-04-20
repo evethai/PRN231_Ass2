@@ -52,6 +52,8 @@ namespace Ass2PRN231.Controllers
             if (search.country != null) {
                 filter = filter.And(p => p.Country.Contains(search.country));
             }
+            Func<IQueryable<Publisher>, IOrderedQueryable<Publisher>> orderBy = null;
+            
             var publishers = _unitOfWork.PublisherRepository.Get(filter, null, "", currentPage, pageSize).ToList();
             var result = _mapper.Map<IEnumerable<PublisherModel>>(publishers);
 
@@ -80,55 +82,52 @@ namespace Ass2PRN231.Controllers
         // PUT: api/publishers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPublisher(int id, Publisher publisher)
+        public async Task<IActionResult> PutPublisher(int id, [FromForm] PublisherUpdateModel publisher)
         {
-            var p = _unitOfWork.PublisherRepository.GetByID(id);
+            if (ModelState.IsValid == false) {
+                return BadRequest(ModelState);
+            }
+            var p= _unitOfWork.PublisherRepository.GetByID(id);
             if (p == null) {
                 return NotFound();
             }
 
-            p.Id = publisher.Id;
             p.Name = publisher.Name;
             p.City = publisher.City;
-            p.Country = publisher.Country;
             p.State = publisher.State;
+            p.Country = publisher.Country;
 
-            _unitOfWork.PublisherRepository.Update(p);
+           
 
             try {
+                _unitOfWork.PublisherRepository.Update(p);
                 _unitOfWork.Save();
+                return Ok(p);
             }
             catch (DbUpdateConcurrencyException) {
-                if (!PublisherExists(id)) {
-                    return NotFound();
-                }
-                else {
-                    throw;
-                }
+                return BadRequest();
             }
-
-            return Ok();
+ 
         }
 
         // POST: api/publishers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Publisher>> PostPublisher(Publisher publisher)
+        public async Task<ActionResult<PublisherUpdateModel>> PostPublisher([FromForm] PublisherUpdateModel publisher)
         {
-            if (_unitOfWork.PublisherRepository == null) {
-                return NotFound();
+            if (ModelState.IsValid == false) {
+                return BadRequest(ModelState);
             }
-
             var p = _mapper.Map<Publisher>(publisher);
-            _unitOfWork.PublisherRepository.Insert(p);
             try {
+                _unitOfWork.PublisherRepository.Insert(p);
                 _unitOfWork.Save();
+                return Ok(publisher);
+            } catch (DbUpdateConcurrencyException) {
+                return BadRequest();
             }
-            catch (DbUpdateException ex) {
-                return BadRequest(ex);
-            }
+           
 
-            return Ok(publisher);
         }
 
         // DELETE: api/publishers/5

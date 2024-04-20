@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.Execution;
@@ -43,6 +44,37 @@ namespace Ass2PRN231.Controllers
             var u = _mapper.Map<UserModel>(user);
             return Ok(u);
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetPublishers([FromQuery] SearchUserModel search)
+        {
+            if (search.pageSize != null) {
+                pageSize = search.pageSize;
+            }
+            if (search.currentPage != null) {
+                currentPage = search.currentPage;
+            }
+            Expression<Func<User, bool>> filter = null;
+            if (search.email != null) {
+                filter = filter.And(p => p.Email == search.email);
+            }
+            if (search.minDate.HasValue || search.maxDate.HasValue) {
+                if (filter == null) {
+                    filter = p => true;
+                }
+                if (search.minDate.HasValue) {
+                    filter = filter.And(p => p.HireDate >= search.minDate);
+                }
+                if (search.maxDate.HasValue) {
+                    filter = filter.And(p => p.HireDate <= search.maxDate);
+                }
+            }
+            Func<IQueryable<User>, IOrderedQueryable<User>> orderBy = null;
+            var publishers = _unitOfWork.UserRepository.Get(filter, null, "", currentPage, pageSize).ToList();
+            var result = _mapper.Map<IEnumerable<UserModel>>(publishers);
+
+            return Ok(result);
+
+        }
 
 
         // GET: api/users/5
@@ -66,13 +98,16 @@ namespace Ass2PRN231.Controllers
         // PUT: api/users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, UserUpdateDTO user)
+        public async Task<IActionResult> PutUser(int id, UserUpdateModel user)
         {
+            if (ModelState.IsValid == false) {
+                return BadRequest(ModelState);
+            }
             var u = _unitOfWork.UserRepository.GetByID(id);
             if (u == null) {
                 return NotFound();
             }
-            u.Id = user.Id;
+            
             u.Email = user.Email;
             u.Password = user.Password;
             u.Source = user.Source;
@@ -82,10 +117,12 @@ namespace Ass2PRN231.Controllers
             u.PubId = user.PubId;
             u.HireDate = user.HireDate;
 
-            _unitOfWork.UserRepository.Update(u);
+           
 
             try {
+                _unitOfWork.UserRepository.Update(u);
                 _unitOfWork.Save();
+                return  Ok(u);
             }
             catch (DbUpdateConcurrencyException) {
                 if (!UserExists(id)) {
@@ -102,27 +139,22 @@ namespace Ass2PRN231.Controllers
         // POST: api/users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<UserUpdateModel>> PostUser([FromForm] UserUpdateModel user)
         {
-            if (_unitOfWork.UserRepository == null) {
-                return NotFound();
-            }
 
-           
-            var c = _unitOfWork.UserRepository.GetByID(user.PubId.Value);
-            if (c == null) {
-                return NotFound("Publisher is null");
+            if (ModelState.IsValid == false) {
+                return BadRequest(ModelState);
             }
-            var p = _mapper.Map<User>(user);
-            _unitOfWork.UserRepository.Insert(p);
+            var u = _mapper.Map<User>(user);
+
             try {
+                _unitOfWork.UserRepository.Insert(u);
                 _unitOfWork.Save();
+                return Ok(user);
             }
-            catch (DbUpdateException ex) {
-                return BadRequest(ex);
+            catch(DbUpdateConcurrencyException) {
+                return BadRequest(ModelState);
             }
-
-            return Ok(user);
         }
 
         // DELETE: api/users/5
