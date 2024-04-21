@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -20,26 +22,27 @@ namespace Repository.Models
         [JsonPropertyName("country")]
         public string? Country { get; set; }
     }
-    public class PublisherCreateDTO
+
+    public class PublisherModelResponse
     {
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
-        [JsonPropertyName("city")]
-        public string? City { get; set; }
-        [JsonPropertyName("state")]
-        public string? State { get; set; }
-        [JsonPropertyName("country")]
-        public string? Country { get; set; }
+        public int total { get; set; }
+        public int currentPage { get; set; }
+        public List<PublisherModel> pubs { get; set; }
     }
-    public class PublisherUpdateDTO
+    
+    public class PublisherUpdateModel
     {
-        [JsonPropertyName("name")]
+        [FromForm(Name = "name")]
+        [Required(ErrorMessage = "Name is required.")]
         public string? Name { get; set; }
-        [JsonPropertyName("city")]
+        [FromForm(Name = "city")]
+        [Required(ErrorMessage = "City is required.")]
         public string? City { get; set; }
-        [JsonPropertyName("state")]
+        [FromForm(Name = "state")]
+        [Required(ErrorMessage = "State is required.")]
         public string? State { get; set; }
-        [JsonPropertyName("country")]
+        [FromForm(Name = "country")]
+        [Required(ErrorMessage = "Country is required.")]
         public string? Country { get; set; }
     }
 }

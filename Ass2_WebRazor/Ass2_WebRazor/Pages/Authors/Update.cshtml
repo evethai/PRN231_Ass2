@@ -1,0 +1,123 @@
+﻿@page
+@model Ass2_WebRazor.Pages.Authors.UpdateModel
+@{
+    ViewData["Title"] = "Update Author";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="container">
+    <form id="updateForm">
+        <div class="form-group">
+            <label for="authorId">Author ID</label>
+            <input type="text" class="form-control" id="authorId" name="authorId" readonly>
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" class="form-control" id="lastName" name="lastName">
+        </div>
+        <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" class="form-control" id="firstName" name="firstName">
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="text" class="form-control" id="phone" name="phone">
+        </div>
+        <div class="form-group">
+            <label for="address">Address</label>
+            <input style=" width: 1000px; white-space: normal;" type="text" class="form-control" id="address" name="address">
+        </div>
+        <div class="form-group">
+            <label for="city">City</label>
+            <input type="text" class="form-control" id="city" name="city">
+        </div>
+        <div class="form-group">
+            <label for="state">State</label>
+            <input type="text" class="form-control" id="state" name="state">
+        </div>
+        <div class="form-group">
+            <label for="zip">Zip</label>
+            <input type="text" class="form-control" id="zip" name="zip">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email">
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top: 20px;"  >Save</button> 
+        <a href="/Authors/Index" class="btn btn-danger" style="margin-top: 20px;">Cancel</a>
+    </form>
+</div>
+
+<script>
+    // Function to fetch author data by ID from API
+    async function fetchAuthorData(authorId) {
+        try {
+            const response = await fetch(`https://localhost:7027/api/Authors/${authorId}`);
+            const data = await response.json();
+            populateForm(data);
+        } catch (error) {
+            console.error('Error fetching author data:', error);
+        }
+    }
+
+    // Function to populate form fields with author data
+    function populateForm(data) {
+        document.getElementById('authorId').value = data.authorid;
+        document.getElementById('lastName').value = data.authorlastname;
+        document.getElementById('firstName').value = data.authorfirstname;
+        document.getElementById('phone').value = data.authorphone;
+        document.getElementById('address').value = data.authoraddress;
+        document.getElementById('city').value = data.authorcity;
+        document.getElementById('state').value = data.authorstate;
+        document.getElementById('zip').value = data.authorzip;
+        document.getElementById('email').value = data.authoremail;
+    }
+
+    // Event listener for form submission
+    document.getElementById('updateForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const authorId = document.getElementById('authorId').value;
+        const formData = {
+            authorid: parseInt(authorId),
+            authorlastname: document.getElementById('lastName').value,
+            authorfirstname: document.getElementById('firstName').value,
+            authorphone: document.getElementById('phone').value,
+            authoraddress: document.getElementById('address').value,
+            authorcity: document.getElementById('city').value,
+            authorstate: document.getElementById('state').value,
+            authorzip: document.getElementById('zip').value,
+            authoremail: document.getElementById('email').value
+        };
+
+        try {
+            const response = await fetch(`https://localhost:7027/api/Authors/${authorId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            if (response.ok) {
+                // Handle success
+                console.log('Author updated successfully');
+                alert('Author updated successfully');
+                window.location.href = '/Authors/Index';
+            } else {
+                // Handle error
+                console.error('Error updating author:', response.statusText);
+                alert('Error updating author. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error updating author:', error);
+            alert('Error updating author. Please try again.');
+        }
+    });
+
+    // Fetch author data when page loads
+    window.addEventListener('load', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const authorId = urlParams.get('id');
+        fetchAuthorData(authorId);
+    });
+</script>

@@ -1,4 +1,5 @@
-﻿using Repository.Entity;
+﻿using Microsoft.AspNetCore.Mvc;
+using Repository.Entity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -39,48 +40,35 @@ namespace Repository.Models
         public string? Password { get; set; }
     }
 
-    public class UserUpdateDTO
+    public class UserUpdateModel
     {
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
-        [JsonPropertyName("email")]
+        [FromForm(Name = "email")]
+        [Required(ErrorMessage = "Email is required.")]
         public string? Email { get; set; }
-        [JsonPropertyName("password")]
+        [FromForm(Name = "password")]
+        [Required(ErrorMessage = "Password is required.")]
         public string? Password { get; set; }
-        [JsonPropertyName("source")]
+        [FromForm(Name = "source")]
+        [Required(ErrorMessage = "Source is required.")]
         public string? Source { get; set; }
-        [JsonPropertyName("firstName")]
+        [FromForm(Name = "first-name")]
+        [Required(ErrorMessage = "FirstName is required.")]
         public string? FirstName { get; set; }
-        [JsonPropertyName("lastName")]
+        [FromForm(Name = "last-name")]
+        [Required(ErrorMessage = "LastName is required.")]
         public string? LastName { get; set; }
-        [JsonPropertyName("roleId")]
+        [FromForm(Name = "role-id")]
+        [Required(ErrorMessage = "Role Id is required.")]
         public int? RoleId { get; set; }
-        [JsonPropertyName("pubId")]
+        [FromForm(Name = "pub-id")]
+        [Required(ErrorMessage = "Publisher Id is required.")]
         public int? PubId { get; set; }
-        [JsonPropertyName("hireDate")]
+        [FromForm(Name = "hire-date")]
+        [Required(ErrorMessage = "Hire date is required.")]
         public DateTime? HireDate { get; set; }
 
 
     }
 
-    public class UserCreateDTO
-    {
-        [JsonPropertyName("email")]
-        public string? Email { get; set; }
-        [JsonPropertyName("password")]
-        public string? Password { get; set; }
-        [JsonPropertyName("source")]
-        public string? Source { get; set; }
-        [JsonPropertyName("firstName")]
-        public string? FirstName { get; set; }
-        [JsonPropertyName("lastName")]
-        public string? LastName { get; set; }
-        [JsonPropertyName("roleId")]
-        public int? RoleId { get; set; }
-        [JsonPropertyName("pubId")]
-        public int? PubId { get; set; }
-        [JsonPropertyName("hireDate")]
-        public DateTime? HireDate { get; set; }
-
-    }
+    
 }
