@@ -79,21 +79,29 @@
             // Clear previous data in table
             const tableBody = document.querySelector('#authorsTable tbody');
             tableBody.innerHTML = '';
+            // Function to truncate text if it exceeds the specified length
+function truncateText(text, maxLength) {
+    if (text.length > maxLength) {
+        return text.substring(0, maxLength) + '...';
+    } else {
+        return text;
+    }
+}
 
             // Populate table with authors data
             if (data.length > 0) {
                 data.forEach(author => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${author.authorid}</td>
-                        <td>${author.authorlastname}</td>
-                        <td>${author.authorfirstname}</td>
-                        <td>${author.authorphone}</td>
-                        <td style="width: auto; white-space: nowrap;">${author.authoraddress}</td>
-                        <td>${author.authorcity}</td>
-                        <td>${author.authorstate}</td>
-                        <td>${author.authorzip}</td>
-                        <td>${author.authoremail}</td>
+                        <td style="width: auto; white-space: nowrap;">${author.authorid}</td>
+                        <td style="width: auto; white-space: nowrap;">${author.authorlastname}</td>
+                        <td style="width: auto; white-space: nowrap;">${author.authorfirstname}</td>
+                        <td style="width: auto; white-space: nowrap;">${author.authorphone}</td>
+                        <td style="width: auto; white-space: nowrap;">${truncateText(author.authoraddress, 20)}</td>
+                        <td style="width: auto; white-space: nowrap;">${author.authorcity}</td>
+                        <td style="width: auto; white-space: nowrap;">${author.authorstate}</td>
+                        <td style="width: auto; white-space: nowrap;">${author.authorzip}</td>
+                        <td style="width: auto; white-space: nowrap;">${author.authoremail}</td>
                         <td>
                             <button class="btn btn-info">Update</button>
                         </td>

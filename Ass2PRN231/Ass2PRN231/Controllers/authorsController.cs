@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ass2PRN231.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/authors")]
     [ApiController]
     public class AuthorsController : ControllerBase
     {
