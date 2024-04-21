@@ -41,8 +41,14 @@ namespace Ass2PRN231.Controllers
 
             var authorModels = _mapper.Map<IEnumerable<GetAuthorModel>>(authors);
 
+            if (!authorModels.Any())
+            {
+                return NotFound("No more pages available.");
+            }
+
             return Ok(authorModels);
         }
+
 
         // GET: api/authors/5
         [HttpGet("{id}")]
@@ -62,7 +68,7 @@ namespace Ass2PRN231.Controllers
 
         // POST: api/authors
         [HttpPost]
-        public async Task<ActionResult<GetAuthorModel>> PostAuthor([FromBody] GetAuthorModel authorModel)
+        public async Task<ActionResult<GetAuthorModel>> PostAuthor([FromBody] AddNewAuthorWithoutIDModel authorModel)
         {
             if (!ModelState.IsValid)
             {
@@ -74,7 +80,9 @@ namespace Ass2PRN231.Controllers
             _unitOfWork.AuthorRepository.Insert(author);
             await _unitOfWork.SaveAsync();
 
-            return CreatedAtAction(nameof(GetAuthor), new { id = author.Id }, authorModel);
+            var getAuthorModel = _mapper.Map<GetAuthorModel>(author);
+
+            return CreatedAtAction(nameof(GetAuthor), new { id = getAuthorModel.Id }, getAuthorModel);
         }
 
         // PUT: api/authors/5
@@ -128,7 +136,7 @@ namespace Ass2PRN231.Controllers
             }
 
             // Tìm kiếm tác giả theo tên
-            var authors = _unitOfWork.AuthorRepository.Get(filter: a => a.FirstName.Contains(name),
+            var authors = _unitOfWork.AuthorRepository.Get(filter: a => a.LastName.Contains(name),
                                                             orderBy: null,
                                                             includeProperties: "",
                                                             pageIndex: null,

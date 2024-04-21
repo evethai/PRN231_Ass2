@@ -6,14 +6,27 @@
 <h1>Authors List</h1>
 
 <!-- Search form -->
-<form method="get" class="mb-3" id="searchForm">
-    <div class="input-group">
-        <input type="text" class="form-control" name="search" placeholder="Search..." id="searchInput">
-        <div class="input-group-append">
-            <button type="submit" class="btn btn-primary">Search</button>
-        </div>
-    </div>
-</form>
+<div class="mb-3 d-flex" id="searchContainer" style="width: 30%;">
+    <input type="text" class="form-control" name="search" placeholder="Search..." id="searchInput">
+    <button type="button" class="btn btn-primary ml-2 align-self-end" id="searchButton">Search</button>
+</div>
+
+<!-- Create New button -->
+<a href="/Authors/Create" class="btn btn-success mb-3">Create New</a>
+
+<script>
+    // Event listener for search button click
+    document.getElementById('searchButton').addEventListener('click', async function (event) {
+        event.preventDefault();
+        const searchTerm = document.getElementById('searchInput').value.trim();
+        if (searchTerm !== '') {
+            window.location.href = `/Authors/SearchView?search=${encodeURIComponent(searchTerm)}`;
+        } else {
+            // Handle empty search term if needed
+        }
+    });
+</script>
+
 
 <!-- Authors table -->
 <div class="table-responsive">
@@ -38,24 +51,27 @@
 </div>
 
 <!-- Pagination -->
-<nav aria-label="Page navigation">
+<nav aria-label="Page navigation" id="paginationContainer">
     <ul class="pagination" id="pagination">
-        <li class="page-item"><a class="page-link" href="#" id="prevPage">Previous</a></li>
+        <li class="page-item" id="prevPageContainer"><a class="page-link" href="#" id="prevPage">Previous</a></li>
         <li class="page-item"><a class="page-link" href="#" id="currentPage">1</a></li>
-        <li class="page-item"><a class="page-link" href="#" id="nextPage">Next</a></li>
+        <li class="page-item" id="nextPageContainer"><a class="page-link" href="#" id="nextPage">Next</a></li>
     </ul>
 </nav>
 
 <script>
     let currentPage = 1;
+    let hasNextPage = true;
 
     // Function to fetch authors data from API
     async function fetchAuthorsData(page = 1) {
         try {
+            if (!hasNextPage) return;
+
             let url = `https://localhost:7027/api/Authors?page=${page}`;
             const searchTerm = document.getElementById('searchInput').value;
             if (searchTerm.trim() !== '') {
-                url = `https://localhost:7027/api/Authors/search?name=${searchTerm}`;
+                url = `https://localhost:7027/api/Authors/search?name=${searchTerm}&page=${page}`;
             }
             const response = await fetch(url);
             const data = await response.json();
@@ -65,39 +81,51 @@
             tableBody.innerHTML = '';
 
             // Populate table with authors data
-            data.forEach(author => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${author.authorid}</td>
-                    <td>${author.authorlastname}</td>
-                    <td>${author.authorfirstname}</td>
-                    <td>${author.authorphone}</td>
-                    <td style="width: auto; white-space: nowrap;">${author.authoraddress}</td>
-                    <td>${author.authorcity}</td>
-                    <td>${author.authorstate}</td>
-                    <td>${author.authorzip}</td>
-                    <td>${author.authoremail}</td>
-                    <td>
-                        <button class="btn btn-info">Update</button>
-                    </td>
-                    <td>
-                        <button class="btn btn-danger">Delete</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
+            if (data.length > 0) {
+                data.forEach(author => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${author.authorid}</td>
+                        <td>${author.authorlastname}</td>
+                        <td>${author.authorfirstname}</td>
+                        <td>${author.authorphone}</td>
+                        <td style="width: auto; white-space: nowrap;">${author.authoraddress}</td>
+                        <td>${author.authorcity}</td>
+                        <td>${author.authorstate}</td>
+                        <td>${author.authorzip}</td>
+                        <td>${author.authoremail}</td>
+                        <td>
+                            <button class="btn btn-info">Update</button>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger">Delete</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
 
-            // Update current page number
-            document.getElementById('currentPage').innerText = page;
+                // Update current page number
+                document.getElementById('currentPage').innerText = page;
+                currentPage = page;
+                hasNextPage = true; // Reset hasNextPage
+                document.getElementById('nextPageContainer').style.display = 'block'; // Show next page button container
+            } else {
+                // Hide pagination if no data
+                document.getElementById('paginationContainer').style.display = 'none';
+                hasNextPage = false;
+                document.getElementById('nextPageContainer').style.display = 'none'; // Hide next page button container
+            }
         } catch (error) {
             console.error('Error fetching authors data:', error);
         }
     }
 
-    // Event listener for search form submission
-    document.getElementById('searchForm').addEventListener('submit', async function (event) {
+    // Event listener for search button click
+    document.getElementById('searchButton').addEventListener('click', async function (event) {
         event.preventDefault();
         currentPage = 1; // Reset current page to 1 when searching
+        hasNextPage = true; // Reset hasNextPage
+        document.getElementById('paginationContainer').style.display = 'block'; // Show pagination
         fetchAuthorsData();
     });
 
@@ -111,8 +139,37 @@
 
     // Event listener for next page button click
     document.getElementById('nextPage').addEventListener('click', () => {
-        currentPage++;
-        fetchAuthorsData(currentPage);
+        if (hasNextPage) {
+            currentPage++;
+            fetchAuthorsData(currentPage);
+        }
+    });
+
+    // Event listener for Update button click
+    document.addEventListener('click', async function(event) {
+        if (event.target.classList.contains('btn-info')) {
+            const authorId = event.target.closest('tr').querySelector('td:first-child').innerText;
+            window.location.href = `/Authors/Update?id=${authorId}`;
+        } else if (event.target.classList.contains('btn-danger')) {
+            const authorId = event.target.closest('tr').querySelector('td:first-child').innerText;
+            const confirmDelete = confirm("Are you sure you want to delete this author?");
+            if (confirmDelete) {
+                try {
+                    const response = await fetch(`https://localhost:7027/api/Authors/${authorId}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        fetchAuthorsData(currentPage);
+                    } else {
+                        console.error('Error deleting author:', response.statusText);
+                        alert('Error deleting author. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error deleting author:', error);
+                    alert('Error deleting author. Please try again.');
+                }
+            }
+        }
     });
 
     // Fetch authors data when page loads
