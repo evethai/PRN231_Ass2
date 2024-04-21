@@ -91,6 +91,10 @@ namespace Repository
         {
             _context.SaveChanges();
         }
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
 
         private bool disposed = false;
 
@@ -125,4 +129,6 @@ namespace Repository
                 Expression.AndAlso(left.Body, invokedExpr), left.Parameters);
         }
     }
+
+
 }
