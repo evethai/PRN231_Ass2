@@ -4,17 +4,18 @@
 <h1>Create New Author</h1>
 
 <form id="createAuthorForm">
-<div class="form-group">
-    <label for="authorlastname">Last Name</label>
-    <input type="text" class="form-control" id="authorlastname" name="authorlastname" required placeholder="Ex: Mike,Nick,.....">
-</div>
+    <div class="form-group">
+        <label for="authorlastname">Last Name</label>
+        <input type="text" class="form-control" id="authorlastname" name="authorlastname" required placeholder="Ex: Mike,Nick,.....">
+    </div>
     <div class="form-group">
         <label for="authorfirstname">First Name</label>
         <input type="text" class="form-control" id="authorfirstname" name="authorfirstname" required placeholder="Ex: Tom,Janes,.....">
     </div>
     <div class="form-group">
         <label for="authorphone">Phone</label>
-        <input type="text" class="form-control" id="authorphone" name="authorphone" placeholder="Ex: (+84)397...">
+        <input type="tel" class="form-control" id="authorphone" name="authorphone" pattern="\+[0-9]{1,3}\s?[0-9]{3,14}" placeholder="Ex: (+84)397...">
+        <small class="form-text text-muted">Enter phone number in format: (+XX)XXXXXXXXX.</small>
     </div>
     <div class="form-group">
         <label for="authoraddress">Address</label>
@@ -26,17 +27,19 @@
     </div>
     <div class="form-group">
         <label for="authorstate">State</label>
-        <input type="text" class="form-control" id="authorstate" name="authorstate" placeholder="Ex: S1, S9,...">
+        <input type="text" class="form-control" id="authorstate" name="authorstate" pattern="[A-Za-z0-9]{1,10}" placeholder="Ex: S1, S9,...">
+        <small class="form-text text-muted">Enter state with maximum 10 alphanumeric characters.</small>
     </div>
     <div class="form-group">
         <label for="authorzip">Zip</label>
-        <input type="text" class="form-control" id="authorzip" name="authorzip" placeholder="Ex: 71452, 1245,...">
+        <input type="text" class="form-control" id="authorzip" name="authorzip" pattern="[0-9]{5}" placeholder="Ex: 71452, 1245,...">
+        <small class="form-text text-muted">Enter 5-digit zip code.</small>
     </div>
     <div class="form-group">
         <label for="authoremail">Email</label>
         <input type="email" class="form-control" id="authoremail" name="authoremail" required placeholder="Ex: example@gmail.com">
     </div>
-    <button type="submit" class="btn btn-primary" style="margin-top: 20px;" >Submit</button>
+    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Submit</button>
     <a href="/Authors/Index" class="btn btn-danger" style="margin-top: 20px;">Cancel</a>
 </form>
 
