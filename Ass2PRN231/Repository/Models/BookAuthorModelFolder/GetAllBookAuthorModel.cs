@@ -5,9 +5,9 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Repository.Models
+namespace Repository.Models.BookAuthorModelFolder
 {
-    public class BookAuthorModel
+    public class GetAllBookAuthorModel
     {
         [JsonPropertyName("bookauthorid")]
         public int Id { get; set; }
@@ -19,6 +19,5 @@ namespace Repository.Models
         public int? AuthorOrder { get; set; }
         [JsonPropertyName("royaltyper")]
         public decimal? RoyaltyPer { get; set; }
-        public BookModel Book { get; set; }
     }
 }

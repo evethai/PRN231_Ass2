@@ -1,6 +1,8 @@
 using AutoMapper;
 using Repository.Entity;
 using Repository.Models;
+using Repository.Models.AuthorModels;
+using Repository.Models.BookAuthorModelFolder;
 using System.Runtime.CompilerServices;
 
 namespace Ass2PRN231.Helper
@@ -19,6 +21,11 @@ namespace Ass2PRN231.Helper
             CreateMap<BookAuthor, BookAuthorModel>().ReverseMap();
             CreateMap<Author,AddNewAuthorModel>().ReverseMap();
             CreateMap<BookAuthor, AddNewAuthorModel>().ReverseMap();
+
+
+            CreateMap<Author, GetAuthorModel>().ReverseMap();    
+            CreateMap<Author, AddNewAuthorWithoutIDModel>().ReverseMap();    
+            CreateMap<BookAuthor, GetAllBookAuthorModel>().ReverseMap();    
 
         }
     }
