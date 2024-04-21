@@ -4,39 +4,40 @@
 <h1>Create New Author</h1>
 
 <form id="createAuthorForm">
-    <div class="form-group">
-        <label for="authorlastname">Last Name</label>
-        <input type="text" class="form-control" id="authorlastname" name="authorlastname" required>
-    </div>
+<div class="form-group">
+    <label for="authorlastname">Last Name</label>
+    <input type="text" class="form-control" id="authorlastname" name="authorlastname" required placeholder="Ex: Mike,Nick,.....">
+</div>
     <div class="form-group">
         <label for="authorfirstname">First Name</label>
-        <input type="text" class="form-control" id="authorfirstname" name="authorfirstname" required>
+        <input type="text" class="form-control" id="authorfirstname" name="authorfirstname" required placeholder="Ex: Tom,Janes,.....">
     </div>
     <div class="form-group">
         <label for="authorphone">Phone</label>
-        <input type="text" class="form-control" id="authorphone" name="authorphone">
+        <input type="text" class="form-control" id="authorphone" name="authorphone" placeholder="Ex: (+84)397...">
     </div>
     <div class="form-group">
         <label for="authoraddress">Address</label>
-        <input type="text" class="form-control" id="authoraddress" name="authoraddress">
+        <input type="text" class="form-control" id="authoraddress" name="authoraddress" placeholder="Ex: Navia St, D9...">
     </div>
     <div class="form-group">
         <label for="authorcity">City</label>
-        <input type="text" class="form-control" id="authorcity" name="authorcity">
+        <input type="text" class="form-control" id="authorcity" name="authorcity" placeholder="Ex: San Diago, NY,...">
     </div>
     <div class="form-group">
         <label for="authorstate">State</label>
-        <input type="text" class="form-control" id="authorstate" name="authorstate">
+        <input type="text" class="form-control" id="authorstate" name="authorstate" placeholder="Ex: S1, S9,...">
     </div>
     <div class="form-group">
         <label for="authorzip">Zip</label>
-        <input type="text" class="form-control" id="authorzip" name="authorzip">
+        <input type="text" class="form-control" id="authorzip" name="authorzip" placeholder="Ex: 71452, 1245,...">
     </div>
     <div class="form-group">
         <label for="authoremail">Email</label>
-        <input type="email" class="form-control" id="authoremail" name="authoremail" required>
+        <input type="email" class="form-control" id="authoremail" name="authoremail" required placeholder="Ex: example@gmail.com">
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary" style="margin-top: 20px;" >Submit</button>
+    <a href="/Authors/Index" class="btn btn-danger" style="margin-top: 20px;">Cancel</a>
 </form>
 
 @section scripts {
