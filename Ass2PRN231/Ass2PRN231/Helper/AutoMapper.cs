@@ -26,6 +26,8 @@ namespace Ass2PRN231.Helper
             CreateMap<Author, GetAuthorModel>().ReverseMap();    
             CreateMap<Author, AddNewAuthorWithoutIDModel>().ReverseMap();    
             CreateMap<BookAuthor, GetAllBookAuthorModel>().ReverseMap();    
+            CreateMap<BookAuthor, AddNewBookAuthorModel>().ReverseMap();
+            CreateMap<User, UserRegisterModel>().ReverseMap();
 
         }
     }

@@ -73,11 +73,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            //t? c?u hình validate token
             ValidateIssuer = false,
             ValidateAudience = false,
-
-            // Validate the token expiry
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(secretKeyBytes),
             ClockSkew = TimeSpan.Zero

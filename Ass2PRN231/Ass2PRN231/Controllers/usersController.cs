@@ -208,6 +208,46 @@ namespace Ass2PRN231.Controllers
             return NoContent();
         }
 
+        [HttpPost("register")]
+        public async Task<ActionResult<UserModel>> Register([FromBody] UserRegisterModel user)
+        {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+            if(user.Password != user.Password_Conform)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Password and Confirm Password must be the same"
+                });
+            }
+            var exitedUser = _unitOfWork.UserRepository.Get(m => m.Email.Equals(user.Email)).FirstOrDefault();
+            if(exitedUser != null)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Email is already existed"
+                });
+            }
+            var u = _mapper.Map<User>(user);
+            u.RoleId = 2;
+            u.HireDate = DateTime.Now;
+            u.Source = "Register";
+            try
+            {
+                _unitOfWork.UserRepository.Insert(u);
+                _unitOfWork.Save();
+                return Ok(u);
+            }
+            catch(DbUpdateConcurrencyException)
+            {
+                return BadRequest(ModelState);
+            }
+        }
+
         private bool UserExists(int id)
         {
             return (_unitOfWork.UserRepository.Get()?.Any(e => e.Id == id)).GetValueOrDefault();

@@ -42,6 +42,7 @@
         font-weight: bold;
     }
 
+    input[type="email"],
     input[type="text"],
     input[type="password"] {
         width: 100%;
@@ -63,6 +64,11 @@
         button:hover {
             background-color: #0056b3;
         }
+
+    .error-message {
+        color: red;
+        font-size: 14px;
+    }
 </style>
 <div class="container">
     <div class="image-container">
@@ -70,23 +76,135 @@
     </div>
     <div class="login-container">
         <h1>Book Stores Register</h1>
-        <form method="post">
+        <form method="post" id="register-form">
             <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="username">Email:</label>
+                <input type="email" id="username" name="username" required>
+                <div class="error-message" id="username-error"></div>
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
+                <div class="error-message" id="password-error"></div>
             </div>
             <div class="form-group">
-                <label for="password-cf">Confirm password::</label>
+                <label for="password-cf">Confirm password:</label>
                 <input type="password" id="password-cf" name="password-cf" required>
+                <div class="error-message" id="password-cf-error"></div>
             </div>
-            <button type="submit">Sign up</button>
-            <a href="/Login" style="margin-left: 10px">Already an user?</a>
+            <div class="form-group">
+                <label for="L-name">Last Name:</label>
+                <input type="text" id="L-name" name="L-name" required>
+                <div class="error-message" id="L-name-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="F-name">First Name:</label>
+                <input type="text" id="F-name" name="F-name" required>
+                <div class="error-message" id="F-name-error"></div>
+            </div>
+            <button id="register" type="submit">Sign up</button>
+            <a href="/Login" style="margin-left: 10px">Already a user?</a>
         </form>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function validateForm() {
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
+        const passwordCf = document.getElementById('password-cf');
+        const lastName = document.getElementById('L-name');
+        const firstName = document.getElementById('F-name');
+
+        let isValid = true;
+
+        if (!username.value) {
+            document.getElementById('username-error').innerText = 'Email is required';
+            isValid = false;
+        } else {
+            document.getElementById('username-error').innerText = '';
+        }
+
+        if (!password.value) {
+            document.getElementById('password-error').innerText = 'Password is required';
+            isValid = false;
+        } else {
+            document.getElementById('password-error').innerText = '';
+        }
+
+        if (!passwordCf.value) {
+            document.getElementById('password-cf-error').innerText = 'Please confirm your password';
+            isValid = false;
+        } else if (passwordCf.value !== password.value) {
+            document.getElementById('password-cf-error').innerText = 'Passwords do not match';
+            isValid = false;
+        } else {
+            document.getElementById('password-cf-error').innerText = '';
+        }
+
+        if (!lastName.value) {
+            document.getElementById('L-name-error').innerText = 'Last Name is required';
+            isValid = false;
+        } else {
+            document.getElementById('L-name-error').innerText = '';
+        }
+
+        if (!firstName.value) {
+            document.getElementById('F-name-error').innerText = 'First Name is required';
+            isValid = false;
+        } else {
+            document.getElementById('F-name-error').innerText = '';
+        }
+
+        return isValid;
+    }
+
+    const form = document.getElementById('register-form');
+    form.addEventListener('submit', function (event) {
+        if (!validateForm()) {
+            event.preventDefault(); 
+        }
+    });
+
+
+    $(document).on("click", "#register", function (event) {
+        event.preventDefault();
+        if (validateForm()) { 
+            var username = $("#username").val();
+            var password = $("#password").val();
+            var confirmPassword = $("#password-cf").val();
+            var lastName = $("#L-name").val();
+            var firstName = $("#F-name").val();
+
+            var userData = {
+                email: username,
+                password: password,
+                password_Conform: confirmPassword,
+                firstName: firstName,
+                lastName: lastName
+            };
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:7027/api/users/register",
+                contentType: "application/json",
+                data: JSON.stringify(userData),
+                success: function (result, status, xhr) {
+                    alert('Register successfully! Please login to continue!');
+                    window.location.href = "/Login";
+                },
+                error: function (xhr, status, error) {
+                    if (xhr.status === 400) {
+                        var responseJson = JSON.parse(xhr.responseText);
+                        alert('Failed to register. ' + "Email is existed!"); 
+                    } else {
+                        alert('Failed to register. Please try again.'); 
+                    }
+                }
+            });
+        }
+    });
+
+</script>
 
 

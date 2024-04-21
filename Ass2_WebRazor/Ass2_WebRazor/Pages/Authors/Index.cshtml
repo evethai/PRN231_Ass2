@@ -3,61 +3,63 @@
 @{
 }
 
-<h1>Authors List</h1>
+<div>
+    <h1>Authors List</h1>
 
-<!-- Search form -->
-<div class="mb-3 d-flex" id="searchContainer" style="width: 30%;">
-    <input type="text" class="form-control" name="search" placeholder="search author last name ..." id="searchInput">
-    <button type="button" class="btn btn-primary ml-2 align-self-end" id="searchButton" style="margin-left: 20px;" >Search</button>
+    <!-- Search form -->
+    <div class="mb-3 d-flex" id="searchContainer" style="width: 30%;">
+        <input type="text" class="form-control" name="search" placeholder="search author last name ..." id="searchInput">
+        <button type="button" class="btn btn-primary ml-2 align-self-end" id="searchButton" style="margin-left: 20px;">Search</button>
+    </div>
+
+    <!-- Create New button -->
+    <a href="/Authors/Create" class="btn btn-success mb-3">Create New</a>
+
+    <script>
+        // Event listener for search button click
+        document.getElementById('searchButton').addEventListener('click', async function (event) {
+            event.preventDefault();
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (searchTerm !== '') {
+                window.location.href = `/Authors/SearchView?search=${encodeURIComponent(searchTerm)}`;
+            } else {
+                // Handle empty search term if needed
+            }
+        });
+    </script>
+
+
+    <!-- Authors table -->
+    <div class="table-responsive">
+        <table class="table table-striped" id="authorsTable">
+            <thead>
+                <tr>
+                    <th style="width: auto; white-space: nowrap;">Author ID</th>
+                    <th style="width: auto; white-space: nowrap;">Last Name</th>
+                    <th style="width: auto; white-space: nowrap;">First Name</th>
+                    <th style="width: auto; white-space: nowrap;">Phone</th>
+                    <th style="width: auto; white-space: nowrap;">Address</th>
+                    <th style="width: auto; white-space: nowrap;">City</th>
+                    <th style="width: auto; white-space: nowrap;">State</th>
+                    <th style="width: auto; white-space: nowrap;">Zip</th>
+                    <th style="width: auto; white-space: nowrap;">Email</th>
+                    <th colspan="2">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation" id="paginationContainer">
+        <ul class="pagination" id="pagination">
+            <li class="page-item" id="prevPageContainer"><a class="page-link" href="#" id="prevPage">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="#" id="currentPage">1</a></li>
+            <li class="page-item" id="nextPageContainer"><a class="page-link" href="#" id="nextPage">Next</a></li>
+        </ul>
+    </nav>
 </div>
-
-<!-- Create New button -->
-<a href="/Authors/Create" class="btn btn-success mb-3">Create New</a>
-
-<script>
-    // Event listener for search button click
-    document.getElementById('searchButton').addEventListener('click', async function (event) {
-        event.preventDefault();
-        const searchTerm = document.getElementById('searchInput').value.trim();
-        if (searchTerm !== '') {
-            window.location.href = `/Authors/SearchView?search=${encodeURIComponent(searchTerm)}`;
-        } else {
-            // Handle empty search term if needed
-        }
-    });
-</script>
-
-
-<!-- Authors table -->
-<div class="table-responsive">
-    <table class="table table-striped" id="authorsTable">
-        <thead>
-            <tr>
-                <th style="width: auto; white-space: nowrap;">Author ID</th>
-                <th style="width: auto; white-space: nowrap;">Last Name</th>
-                <th style="width: auto; white-space: nowrap;">First Name</th>
-                <th style="width: auto; white-space: nowrap;">Phone</th>
-                <th style="width: auto; white-space: nowrap;">Address</th>
-                <th style="width: auto; white-space: nowrap;">City</th>
-                <th style="width: auto; white-space: nowrap;">State</th>
-                <th style="width: auto; white-space: nowrap;">Zip</th>
-                <th style="width: auto; white-space: nowrap;">Email</th>
-                <th colspan="2">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-</div>
-
-<!-- Pagination -->
-<nav aria-label="Page navigation" id="paginationContainer">
-    <ul class="pagination" id="pagination">
-        <li class="page-item" id="prevPageContainer"><a class="page-link" href="#" id="prevPage">Previous</a></li>
-        <li class="page-item"><a class="page-link" href="#" id="currentPage">1</a></li>
-        <li class="page-item" id="nextPageContainer"><a class="page-link" href="#" id="nextPage">Next</a></li>
-    </ul>
-</nav>
 
 <script>
     let currentPage = 1;
@@ -80,13 +82,13 @@
             const tableBody = document.querySelector('#authorsTable tbody');
             tableBody.innerHTML = '';
             // Function to truncate text if it exceeds the specified length
-function truncateText(text, maxLength) {
-    if (text.length > maxLength) {
-        return text.substring(0, maxLength) + '...';
-    } else {
-        return text;
-    }
-}
+            function truncateText(text, maxLength) {
+                if (text.length > maxLength) {
+                    return text.substring(0, maxLength) + '...';
+                } else {
+                    return text;
+                }
+            }
 
             // Populate table with authors data
             if (data.length > 0) {
