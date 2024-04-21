@@ -128,6 +128,9 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
+
+    var token = localStorage.getItem('token');
+
     var currentPage = 1;
     var pageSize = 3;
     var totalPages = 1;
@@ -170,6 +173,9 @@
         $.ajax({
             type: "DELETE",
             url: "https://localhost:7027/api/books/" + id,
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
             contentType: "application/json",
             success: function (result, status, xhr) {
                 ShowBooks(currentPage, "", "", "");

@@ -30,7 +30,29 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        var isLoggedIn = false;
         $(document).ready(function () {
+            var urlParams = new URLSearchParams(window.location.search);
+            var id = urlParams.get("id");
+            if (id != null) {
+                getUserbyId(id);
+            }
+            getAllBooks();
+        });
+
+        function getUserbyId(id) {
+            $.ajax({
+                type: "GET",
+                url: "https://localhost:7027/api/users/" + id,
+                contentType: "application/json",
+                success: function (result, status, xhr) {
+                    isLoggedIn = true;
+                    updateLoginStatus(result.firstName + " " + result.lastName);
+                }
+            });
+        }
+
+        function getAllBooks() {
             $.ajax({
                 type: "GET",
                 url: "https://localhost:7027/api/books",
@@ -50,9 +72,7 @@
                     });
                 }
             });
-        });
-
-        var isLoggedIn = false;
+        }
 
         $(document).ready(function () {
             updateLoginStatus();
@@ -66,10 +86,10 @@
             });
         });
 
-        function updateLoginStatus() {
+        function updateLoginStatus(name) {
             var loginStatus = $('#loginStatus');
             if (isLoggedIn) {
-                loginStatus.html('<a href="#">Logout</a> | Welcome User');
+                loginStatus.html('<a href="#">Logout</a> | Welcome '+name);
             } else {
                 loginStatus.html('<a href="#">Login</a>');
             }

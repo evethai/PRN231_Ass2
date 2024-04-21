@@ -117,6 +117,7 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
+    var token = localStorage.getItem('token');
     $(document).ready(function () {
         getAllPublisher();
     });
@@ -236,6 +237,9 @@
             $.ajax({
                 type: "PUT",
                 url: "https://localhost:7027/api/books/"+ id,
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
                 data: data,
                 contentType: false,
                 processData: false,

@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.Execution;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Repository;
 using Repository.Entity;
 using Repository.Models;
@@ -18,18 +22,18 @@ namespace Ass2PRN231.Controllers
     [ApiController]
     public class usersController : ControllerBase
     {
-        private readonly Ass2Prn231Context _context;
         private readonly UnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _config;
 
         private int? pageSize = 10;
         private int? currentPage = 1;
 
-        public usersController(Ass2Prn231Context context, UnitOfWork unitOfWork, IMapper mapper)
+        public usersController( UnitOfWork unitOfWork, IMapper mapper, IConfiguration config)
         {
-            _context = context;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _config = config;
         }
 
         [HttpPost("login")]
@@ -37,11 +41,41 @@ namespace Ass2PRN231.Controllers
         {
             var user = _unitOfWork.UserRepository.Get(m => m.Email.Equals(login.Email) && m.Password.Equals(login.Password)).FirstOrDefault();
             if (user == null) {
-                return BadRequest("Login error: Email or Password incorrect");
+                return Unauthorized(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Invalid email or password"
+                });
             }
+            //config token
+            return Ok(new ApiResponse
+            {
+                Success = true,
+                Message = "Login successfully",
+                Data = GenerateToken(user)
+            });
+            
+        }
+        private string GenerateToken(User user)
+        {
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
+            var secretKeyBytes = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim("Id", user.Id.ToString()),
+                    new Claim("Email", user.Email),
+                    new Claim(ClaimTypes.Role, user.RoleId.ToString()),
+                    new Claim("Name", user.FirstName + " "+ user.LastName),
+                    new Claim ("TokenId", Guid.NewGuid().ToString())
+                }),
+                Expires = DateTime.UtcNow.AddMinutes(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes), SecurityAlgorithms.HmacSha256Signature)
+            };
 
-            var u = _mapper.Map<UserModel>(user);
-            return Ok(u);
+            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
+            return  jwtTokenHandler.WriteToken(token);
         }
 
 
@@ -145,7 +179,7 @@ namespace Ass2PRN231.Controllers
 
         private bool UserExists(int id)
         {
-            return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_unitOfWork.UserRepository.Get()?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

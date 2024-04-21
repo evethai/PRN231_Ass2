@@ -4,6 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +34,6 @@ namespace Ass2PRN231.Controllers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-
         // GET: api/books
         [HttpGet]
         //public async Task<ActionResult<IEnumerable<BookModel>>> GetBooks([FromQuery] BookSearchModel search)
@@ -137,7 +138,7 @@ namespace Ass2PRN231.Controllers
             var result = _mapper.Map<BookModel>(book);
             return Ok(result);
         }
-
+        [Authorize(Roles = "1")]
         // PUT: api/books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -174,7 +175,7 @@ namespace Ass2PRN231.Controllers
             }
 
         }
-
+        [Authorize(Roles = "1")]
         // POST: api/books
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -199,7 +200,7 @@ namespace Ass2PRN231.Controllers
             }
 
         }
-
+        [Authorize(Roles = "1")]
         // DELETE: api/books/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
