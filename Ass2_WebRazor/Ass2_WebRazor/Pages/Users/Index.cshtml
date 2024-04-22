@@ -1,0 +1,218 @@
+﻿@page
+@model Ass2_WebRazor.Pages.Users.IndexModel
+@{
+    ViewData["Title"] = "Users";
+}
+<style>
+    /* CSS cho tiêu đề "Books" */
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* CSS cho ô input tìm kiếm */
+    .search-container {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    #searchInput #minPriceInput #maxPriceInput {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 5px;
+    }
+
+    #searchButton {
+        padding: 5px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        #searchButton:hover {
+            background-color: #0056b3;
+        }
+
+    /* CSS cho bảng sách */
+    #usersTable {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        #usersTable th, #usersTable td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        #usersTable th {
+            background-color: #f0f0f0;
+        }
+
+    /* CSS cho nút "Add New" */
+    #addButton {
+        display: block;
+        margin: 0 auto;
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        #addButton:hover {
+            background-color: #218838;
+        }
+
+    a.update-button {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+        a.update-button:hover {
+            background-color: #0056b3;
+        }
+
+    a.delete-button {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #dc3545;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+        a.delete-button:hover {
+            background-color: #c82333;
+        }
+
+</style>
+
+<h1>Users</h1>
+
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search by name..." />
+    
+    <button type="button" id="searchButton">Search</button>
+</div>
+<table id="usersTable">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Email</th>
+           
+            <th>Source</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Role ID</th>
+            <th>Publisher ID</th>
+            <th>Hire Date</th>
+            <th>Update</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Book list will be populated here -->
+    </tbody>
+</table>
+<div id="pagination"></div>
+<button type="button" id="addButton">Add New</button>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    var currentPage = 1;
+    var pageSize = 3;
+    var totalPages = 1;
+
+    $(document).ready(function () {
+        ShowUsers(currentPage, "");
+    });
+
+    function ShowUsers(page, search) {
+        $("#usersTable tbody").html("");
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:7027/api/users?current-page=" + page + "&page-size=" + pageSize + "&email=" + search ,
+            contentType: "application/json",
+            success: function (result, status, xhr) {
+                $.each(result.users, function (key, item) {
+                    var row = $("<tr>");
+                    row.append($("<td>").html(item.id));
+                    row.append($("<td>").html(item.email));
+                   
+                    row.append($("<td>").html(item.source));
+                    row.append($("<td>").html(item.firstName));
+                    row.append($("<td>").html(item.lastName));
+                    row.append($("<td>").html(item["role-id"]));
+                    row.append($("<td>").html(item["publisher-id"]));
+                    row.append($("<td>").html(item.hireDate));
+                    row.append($("<td>").html("<a href='/Users/Edit?id=" + item.id + "' class='update-button'>Update</a>"));
+                    row.append($("<td>").html("<a  href='#' class='delete-button delete'>Delete</a>"));
+                    $("#usersTable tbody").append(row);
+                });
+                // Update pagination
+                currentPage = result.currentPage;
+                totalPages = Math.ceil(result.total / pageSize);
+                UpdatePagination();
+            },
+            error: function (xhr, status, error) {
+                alert("Error: " + status + " - " + error);
+            }
+        });
+    }
+
+    $(document).on("click", ".delete", function () {
+        var id = $(this).closest("tr").find("td:eq(0)").text();
+        $.ajax({
+            type: "DELETE",
+            url: "https://localhost:7027/api/users/" + id,
+            contentType: "application/json",
+            success: function (result, status, xhr) {
+                ShowUsers(currentPage, "");
+            },
+            error: function (xhr, status, error) {
+                console.log("Error:", error);
+            }
+        });
+    });
+
+    function UpdatePagination() {
+        var paginationHtml = "Page: ";
+        for (var i = 1; i <= totalPages; i++) {
+            if (i === currentPage) {
+                paginationHtml += "<span>" + i + "</span> ";
+            } else {
+                paginationHtml += "<a href='#' onclick='ChangePage(" + i + ")'>" + i + "</a> ";
+            }
+        }
+        $("#pagination").html(paginationHtml);
+    }
+
+    $(document).on("click", "#searchButton", function () {
+        var searchInput = $("#searchInput").val();
+        
+        ShowUsers(currentPage, searchInput);
+    });
+
+    function ChangePage(page) {
+        var searchInput = $("#searchInput").val();
+       
+        ShowUsers(page, searchInput);
+        // ShowBooks(page, "", "", "");
+    }
+
+    $("#addButton").click(function () {
+        window.location.href = "https://localhost:7043/Users/Create";
+    });
+
+</script>
