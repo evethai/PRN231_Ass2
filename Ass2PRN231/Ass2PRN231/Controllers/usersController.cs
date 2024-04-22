@@ -78,7 +78,7 @@ namespace Ass2PRN231.Controllers
             return  jwtTokenHandler.WriteToken(token);
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetPublishers([FromQuery] SearchUserModel search)
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers([FromQuery] SearchUserModel search)
         {
             if (search.pageSize != null) {
                 pageSize = search.pageSize;
@@ -88,23 +88,16 @@ namespace Ass2PRN231.Controllers
             }
             Expression<Func<User, bool>> filter = null;
             if (search.email != null) {
-                filter = filter.And(p => p.Email == search.email);
-            }
-            if (search.minDate.HasValue || search.maxDate.HasValue) {
-                if (filter == null) {
-                    filter = p => true;
-                }
-                if (search.minDate.HasValue) {
-                    filter = filter.And(p => p.HireDate >= search.minDate);
-                }
-                if (search.maxDate.HasValue) {
-                    filter = filter.And(p => p.HireDate <= search.maxDate);
-                }
-            }
+                filter = filter.And(p => p.Email.Contains(search.email));
+            }          
             Func<IQueryable<User>, IOrderedQueryable<User>> orderBy = null;
-            var publishers = _unitOfWork.UserRepository.Get(filter, null, "", currentPage, pageSize).ToList();
-            var result = _mapper.Map<IEnumerable<UserModel>>(publishers);
-
+            var users = _unitOfWork.UserRepository.Get(filter, null, "", currentPage, pageSize).ToList();
+            var list = _mapper.Map<IEnumerable<UserModel>>(users);
+            var total = _unitOfWork.UserRepository.Get(filter).Count();
+            UserModelResponse result = new UserModelResponse();
+            result.total = total;
+            result.currentPage = currentPage.Value;
+            result.users = list.ToList();
             return Ok(result);
 
         }

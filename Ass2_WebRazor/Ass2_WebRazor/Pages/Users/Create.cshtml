@@ -1,0 +1,247 @@
+﻿@page
+@model Ass2_WebRazor.Pages.Users.CreateModel
+@{
+}
+<style>
+    .containerCreate {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    select {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-top: 5px;
+    }
+
+        select option {
+            padding: 8px;
+        }
+
+
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px #007bff;
+        }
+
+    input[type="submit"] {
+        width: auto;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+    .error-message {
+        color: red;
+        font-size: 14px;
+    }
+</style>
+
+<div class="containerCreate">
+    <h1>Create User</h1>
+    <div>
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email">
+        <div class="error-message" id="emailError"></div>
+    </div>
+    <div>
+        <label for="type">Password:</label>
+        <input type="text" id="password" name="password">
+        <div class="error-message" id="passwordError"></div>
+    </div>
+    <div>
+        <label for="source">Source:</label>
+        <input type="text" id="source" name="source">
+        <div class="error-message" id="sourceError"></div>
+    </div>
+    <div>
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName">
+        <div class="error-message" id="firstNameError"></div>
+    </div>
+    <div>
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName">
+        <div class="error-message" id="lastNameError"></div>
+    </div>
+    <div>
+        <label for="pubId">Publisher:</label>
+        <select id="pubId" name="pubId">
+            <option value="">Select Publisher</option>
+        </select>
+        <div class="error-message" id="pubIdError"></div>
+    </div>
+    <div>
+        <label for="roleId">Role:</label>
+        <select id="roleId" name="roleId">
+            <option value="">Select Role</option>
+        </select>
+        <div class="error-message" id="roleIdError"></div>
+    </div>
+    
+    <div>
+        <label for="hireDate">Hire Date:</label>
+        <input type="text" id="hireDate" name="hireDate">
+        <div class="error-message" id="hireDateError"></div>
+    </div>
+    <div>
+        <input type="submit" id="saveButton" value="Save">
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        getAllPublisher();
+        getAllRole();
+    });
+
+    function getAllPublisher() {
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:7027/api/publishers",
+            contentType: "application/json",
+            success: function (result, status, xhr) {
+                $.each(result, function (index, value) {
+                    $("#pubId").append($("<option>").html(value["name"]).val(value["id"]));
+                });
+            }
+        });
+    }
+    function getRole() {
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:7027/api/roles",
+            contentType: "application/json",
+            success: function (result, status, xhr) {
+                $.each(result, function (index, value) {
+                    $("#roleId").append($("<option>").html(value["name"]).val(value["id"]));
+                });
+            }
+        });
+    }
+
+
+    function validateForm() {
+        // Reset error messages
+        document.querySelectorAll('.error-message').forEach(function (element) {
+            element.innerText = '';
+        });
+
+        // Get form inputs
+        var email = document.getElementById('email').value.trim();
+        var password = document.getElementById('password').value.trim();
+        var source = document.getElementById('source').value.trim();
+        var firstName = document.getElementById('firstName').value.trim();
+        var lastName = document.getElementById('lastName').value.trim();
+        var roleId = document.getElementById('roleId').value.trim();
+        var pubId = document.getElementById('pubId').value.trim();
+        var hireDate = document.getElementById('hireDate').value.trim();
+        
+
+        // Flag to track if form is valid
+        var isValid = true;
+
+        // Validation logic
+        if (email === '') {
+            document.getElementById('emailError').innerText = 'Email is required.';
+            isValid = false;
+        }
+        if (password === '') {
+            document.getElementById('passwordError').innerText = 'Password is required.';
+            isValid = false;
+        }
+        if (source === '') {
+            document.getElementById('sourceError').innerText = 'Source Id is required.';
+            isValid = false;
+        }
+        if (firstName === '') {
+            document.getElementById('firstNameError').innerText = 'First Name is required.';
+            isValid = false;
+        }
+        if (lastName === '') {
+            document.getElementById('lastNameError').innerText = 'Last Name is required.';
+            isValid = false;
+        }
+        if (roleId === '') {
+            document.getElementById('roleIdError').innerText = 'RoleId is required.';
+            isValid = false;
+        }
+        if (pubId === '') {
+            document.getElementById('pubIdError').innerText = 'Publisher Id is required.';
+            isValid = false;
+        }
+        if (hireDate === '') {
+            document.getElementById('hireDateError').innerText = 'Hire Date Sales is required.';
+            isValid = false;
+        }
+       
+
+        return isValid;
+    }
+
+    $(document).on("click", "#saveButton", function () {
+
+        if (validateForm()) {
+
+            data = new FormData();
+            data.append("email", $("#email").val());
+            data.append("password", $("#password").val());
+            data.append("source", $("#source").val());
+            data.append("firstName", $("#firstName").val());
+            data.append("lastName", $("#lastName").val());
+            data.append("roleId", $("#roleId").val());
+            data.append("pubId", $("#pubId").val());
+            data.append("hireDate", $("#hireDate").val());
+
+
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:7027/api/users",
+                data: data,
+                contentType: false,
+                processData: false,
+                success: function (result, status, xhr) {
+                    alert('User created successfully.');
+                    window.location.href = '/Users/Index';
+                },
+                error: function (xhr, status, error) {
+                    alert('Failed to create user. Please try again.');
+                }
+            });
+        } else {
+
+            console.log('Form is invalid. Please correct the errors.');
+        }
+    });
+</script>

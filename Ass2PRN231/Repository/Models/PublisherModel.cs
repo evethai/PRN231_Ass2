@@ -27,7 +27,7 @@ namespace Repository.Models
     {
         public int total { get; set; }
         public int currentPage { get; set; }
-        public List<PublisherModel> pubs { get; set; }
+        public List<PublisherModel> publishers { get; set; }
     }
     
     public class PublisherUpdateModel

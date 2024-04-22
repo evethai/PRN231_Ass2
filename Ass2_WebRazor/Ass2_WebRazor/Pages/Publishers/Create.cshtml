@@ -1,0 +1,171 @@
+﻿@page
+@model Ass2_WebRazor.Pages.Publishers.CreateModel
+@{
+}
+<style>
+    .containerCreate {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    select {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-top: 5px;
+    }
+
+        select option {
+            padding: 8px;
+        }
+
+
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px #007bff;
+        }
+
+    input[type="submit"] {
+        width: auto;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+    .error-message {
+        color: red;
+        font-size: 14px;
+    }
+</style>
+
+<div class="containerCreate">
+    <h1>Create Publisher</h1>
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name">
+        <div class="error-message" id="nameError"></div>
+    </div>
+    <div>
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city">
+        <div class="error-message" id="cityError"></div>
+    </div>
+    <div>
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state">
+        <div class="error-message" id="stateError"></div>
+    </div>
+    <div>
+        <label for="country">Country:</label>
+        <input type="text" id="country" name="country">
+        <div class="error-message" id="countryError"></div>
+    </div>
+
+    <div>
+        <input type="submit" id="saveButton" value="Save">
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+
+    
+
+
+    function validateForm() {
+        // Reset error messages
+        document.querySelectorAll('.error-message').forEach(function (element) {
+            element.innerText = '';
+        });
+
+        // Get form inputs
+        var name = document.getElementById('name').value.trim();
+        var city = document.getElementById('city').value.trim();
+        var state = document.getElementById('state').value.trim();
+        var country = document.getElementById('country').value.trim();
+       
+
+        // Flag to track if form is valid
+        var isValid = true;
+
+        // Validation logic
+        if (name === '') {
+            document.getElementById('nameError').innerText = 'Name is required.';
+            isValid = false;
+        }
+        if (city === '') {
+            document.getElementById('cityError').innerText = 'City is required.';
+            isValid = false;
+        }
+        if (state === '') {
+            document.getElementById('stateError').innerText = 'State is required.';
+            isValid = false;
+        }
+        if (country === '') {
+            document.getElementById('countryError').innerText = 'Country is required.';
+            isValid = false;
+        } 
+
+        return isValid;
+    }
+
+    $(document).on("click", "#saveButton", function () {
+
+        if (validateForm()) {
+
+            data = new FormData();
+            data.append("name", $("#name").val());
+            data.append("city", $("#city").val());
+            data.append("state", $("#state").val());
+            data.append("country", $("#country").val());
+           
+
+
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:7027/api/publishers",
+                data: data,
+                contentType: false,
+                processData: false,
+                success: function (result, status, xhr) {
+                    alert('Publisher created successfully.');
+                    window.location.href = '/Publishers/Index';
+                },
+                error: function (xhr, status, error) {
+                    alert('Failed to create publisher. Please try again.');
+                }
+            });
+        } else {
+
+            console.log('Form is invalid. Please correct the errors.');
+        }
+    });
+</script>

@@ -44,7 +44,7 @@ namespace Ass2PRN231.Controllers
             }
             Expression<Func<Publisher, bool>> filter = null;
             if (search.name != null) {
-                filter = filter.And(p => p.Name == search.name);
+                filter = filter.And(p => p.Name.Contains(search.name));
             }
             if (search.city != null) {
                 filter = filter.And(p => p.City.Contains(search.city));
@@ -53,10 +53,13 @@ namespace Ass2PRN231.Controllers
                 filter = filter.And(p => p.Country.Contains(search.country));
             }
             Func<IQueryable<Publisher>, IOrderedQueryable<Publisher>> orderBy = null;
-            
             var publishers = _unitOfWork.PublisherRepository.Get(filter, null, "", currentPage, pageSize).ToList();
-            var result = _mapper.Map<IEnumerable<PublisherModel>>(publishers);
-
+            var list = _mapper.Map<IEnumerable<PublisherModel>>(publishers);
+            var total = _unitOfWork.PublisherRepository.Get(filter).Count();
+            PublisherModelResponse result = new PublisherModelResponse();
+            result.total = total;
+            result.currentPage = currentPage.Value;
+            result.publishers = list.ToList();
             return Ok(result);
 
         }

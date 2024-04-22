@@ -1,13 +1,17 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Repository;
 using Repository.Entity;
+using Microsoft.Extensions.DependencyInjection;
+using Ass2PRN231.Data;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<Ass2PRN231Context>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Ass2PRN231Context") ?? throw new InvalidOperationException("Connection string 'Ass2PRN231Context' not found.")));
 
 // Add services to the container.
 

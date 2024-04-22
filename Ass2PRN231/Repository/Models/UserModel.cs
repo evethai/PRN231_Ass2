@@ -24,9 +24,9 @@ namespace Repository.Models
         public string? FirstName { get; set; }
         [JsonPropertyName("lastName")]
         public string? LastName { get; set; }
-        [JsonPropertyName("roleId")]
+        [JsonPropertyName("role-id")]
         public int? RoleId { get; set; }
-        [JsonPropertyName("pubId")]
+        [JsonPropertyName("publisher-id")]
         public int? PubId { get; set; }
         [JsonPropertyName("hireDate")]
         public DateTime? HireDate { get; set; }
@@ -85,5 +85,10 @@ namespace Repository.Models
 
     }
 
-    
+    public class UserModelResponse
+    {
+        public int total { get; set; }
+        public int currentPage { get; set; }
+        public List<UserModel> users { get; set; }
+    }
 }
